@@ -1,6 +1,6 @@
-import Router from 'koa-router'
-import controller from '../../controllers/PlatformAccount.js'
+import Router from 'koa-router';
+import Controller from '../../controllers/platform/User.js'
 const router = new Router({ prefix: '/api' });
 
-router.post('/login', controller.login);
-export default router
+router.post('/platform/login', Controller.login);
+export default router;
