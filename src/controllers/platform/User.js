@@ -2,6 +2,7 @@ import { Op } from 'sequelize'
 import BaseController from '../BaseController.js';
 import Service from '../../service/platform/PlatformService.js'
 import { initPagination } from '../../utils/index.js'
+import TokenController from '../token/index.js'
 
 
 class Controller {
@@ -59,7 +60,24 @@ class Controller {
     });
 
     if (data.length) {
-      ctx.body = BaseController.renderJsonWarn(200, '登录成功！', {data});
+      let userInfo = data[0];
+      let params = {
+        id: userInfo.id,
+        userName: userInfo.userName
+      }
+      // 生成token
+      let token = TokenController.createToken(params, 60 *60);
+      // 更新用户信息中token
+      delete userInfo.token;
+      let updateRes = await Service.update(
+        { token },
+        { where: { id: params.id } }
+      );
+      if (updateRes) {
+        ctx.body = BaseController.renderJsonWarn(200, '登录成功！', {userInfo, token});
+      } else {
+        ctx.body = BaseController.renderJsonWarn(400, '登录失败！');
+      }
     } else {
       ctx.body = BaseController.renderJsonWarn(400, '登录失败！');
     }
@@ -105,7 +123,7 @@ class Controller {
       offset: start
     });
 
-    ctx.body = BaseController.renderJsonWarn(200, '获取成功！', { data, total, page, pageSize});
+    ctx.body = BaseController.renderJsonWarn(200, '获取成功！', { list: data, total, page, pageSize});
   }
   /**
    * @description: 删除用户

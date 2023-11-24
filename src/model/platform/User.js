@@ -8,6 +8,7 @@ class ItemModel extends Model { }
 ItemModel.init({
     username: DataTypes.STRING,
     password: DataTypes.STRING,
+    token: DataTypes.STRING,
 }, { sequelize, modelName});
 
 
