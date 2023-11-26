@@ -1,0 +1,12 @@
+{
+    "name": "lowcode",
+    "version": "1.0.0",
+    "description": "lowcode项目API文档",
+    "title": "lowcode API",
+    "url" : "http://127.0.0.1:6080",
+    "forceLanguage":"zh-cn",
+    "template": {
+      "withCompare": true,
+      "withGenerator": true
+    }
+  }

@@ -63,12 +63,11 @@ class Controller {
       let userInfo = data[0];
       let params = {
         id: userInfo.id,
-        userName: userInfo.userName
+        userName: userInfo.username
       }
       // 生成token
       let token = TokenController.createToken(params, 60 *60);
       // 更新用户信息中token
-      delete userInfo.token;
       let updateRes = await Service.update(
         { token },
         { where: { id: params.id } }
@@ -179,6 +178,24 @@ class Controller {
       ctx.body = BaseController.renderJsonWarn(200, '更新成功！');
     } else {
       ctx.body = BaseController.renderJsonWarn(400, '更新失败！');
+    }
+  }
+
+  /**
+   * @description: 登出
+   * @param {Context} ctx
+   */
+  async logout (ctx) {
+    let { id } = ctx.payload;
+    // 删除该用户token
+    let updateRes = await Service.update(
+      { token: '' },
+      { where: { id } }
+    );
+    if (updateRes) {
+      ctx.body = BaseController.renderJsonWarn(200, '登出成功！');
+    } else {
+      ctx.body = BaseController.renderJsonWarn(400, '登出失败！');
     }
   }
 }
