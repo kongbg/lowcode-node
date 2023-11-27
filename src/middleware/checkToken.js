@@ -19,8 +19,9 @@ export const verifToken = ({key='', secret='', whites=[]}=options) => {
                         token,
                         secret
                     )
-                    ctx.payload = result;
+                    ctx.payload = {...result, token};
                 } catch (error) {
+                    ctx.payload = {token, id: null}
                     let message = error.message === 'jwt expired' ? 'token 过期' : 'token 出错';
                     ctx.body = BaseController.renderJsonWarn(401, message);
                 }

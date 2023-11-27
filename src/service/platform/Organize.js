@@ -1,4 +1,4 @@
-import Model from '../../model/platform/User.js'
+import Model from '../../model/platform/Organize.js'
 
 
 class PlatformService {
@@ -46,6 +46,14 @@ class PlatformService {
         let data = await Model.destroy(options);
         // console.log('删除项目: ', data)
         return Boolean(data);
+    }
+    // 导入
+    async import(options={}) {
+        return Boolean(true);
+    }
+    // 导出
+    async export(options={}) {
+        return Boolean(true);
     }
 }
 

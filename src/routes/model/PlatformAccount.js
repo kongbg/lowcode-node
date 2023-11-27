@@ -16,7 +16,7 @@ const router = new Router({ prefix: '/api' });
  *      "code": 200,
  *      "message": 'ok',
  *      "data": null
- * }
+ *    }
  */
 router.post('/platform/user/register',Controller.register);
 
@@ -130,8 +130,8 @@ router.post('/platform/user/update',Controller.updateUser);
 router.post('/platform/user/delete',Controller.deleteUser);
 
 /**
- * @api {post} /api/platform/user/logout 平台用户登出
- * @apiDescription 平台用户登出
+ * @api {post} /api/platform/user/logout 平台用户退出
+ * @apiDescription 平台用户退出
  * @apiName logout
  * @apiGroup platform
  * @apiVersion 1.0.0
@@ -145,4 +145,42 @@ router.post('/platform/user/delete',Controller.deleteUser);
  * }
  */
 router.post('/platform/user/logout',Controller.logout);
+
+/**
+ * @api {post} /api/platform/user/import 平台用户导入
+ * @apiDescription 平台用户导入
+ * @apiName platformUserImport
+ * @apiGroup platform
+ * @apiVersion 1.0.0
+ * @apiSuccessExample Success-Response:
+ *    HTTP/1.1 200 OK
+ *    {
+ *      "code": 200,
+ *      "message": 'ok',
+ *      "data": null
+ *    }
+ * }
+ */
+router.post('/platform/user/import',Controller.import);
+
+/**
+ * @api {post} /api/platform/user/export 平台用户导出
+ * @apiDescription 平台用户导出
+ * @apiName platformUserExport
+ * @apiGroup platform
+ * @apiVersion 1.0.0
+ * @apiSuccessExample Success-Response:
+ *    HTTP/1.1 200 OK
+ *    {
+ *      "code": 200,
+ *      "message": 'ok',
+ *      "data": {
+ *          name: '文件名',
+ *          data：[]
+ *      }
+ *    }
+ * }
+ */
+router.post('/platform/user/export',Controller.export);
+
 export default router;

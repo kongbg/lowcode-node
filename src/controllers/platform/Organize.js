@@ -1,16 +1,14 @@
 import { Op } from 'sequelize'
 import BaseController from '../BaseController.js';
-import Service from '../../service/platform/User.js'
+import Service from '../../service/platform/Organize.js'
 import { initPagination } from '../../utils/index.js'
-import TokenController from '../token/index.js'
-
 
 class Controller {
   /**
-   * @description: 注册
+   * @description: 新增组织
    * @param {Context} ctx
    */
-  async register (ctx) {
+  async add (ctx) {
     let { userName, passWord } = ctx.request.body;
     if (!userName || !passWord) {
       ctx.body = BaseController.renderJsonWarn(400, '账号或密码错误！');
@@ -22,63 +20,19 @@ class Controller {
         username: userName
       }
     })
-    // 不存在，注册新用户
+    // 不存在，新增组织
     if (!isExist) {
       let data = await Service.addOne({
         username: userName,
         password: passWord
       });
       if (data) {
-        ctx.body = BaseController.renderJsonWarn(200, '注册成功！');
+        ctx.body = BaseController.renderJsonWarn(200, '新增成功！');
       } else {
-        ctx.body = BaseController.renderJsonWarn(400, '注册失败！');
+        ctx.body = BaseController.renderJsonWarn(400, '新增失败！');
       }
     } else { // 已存在
-      ctx.body = BaseController.renderJsonWarn(400, '用户已经存在！');
-    }
-  }
-
-  /**
-   * @description: 登录
-   * @param {Context} ctx
-   */
-  async login (ctx) {
-    let { userName, passWord } = ctx.request.body;
-    if (!userName || !passWord) {
-      ctx.body = BaseController.renderJsonWarn(400, '账号或密码错误！');
-      return;
-    }
-
-    // 且条件查询 [Op.and]
-    let data = await Service.findOne({
-      where: {
-        [Op.and] : [
-          {username: userName},
-          {password: passWord}
-        ]
-      }
-    });
-
-    if (data.length) {
-      let userInfo = data[0];
-      let params = {
-        id: userInfo.id,
-        userName: userInfo.username
-      }
-      // 生成token
-      let token = TokenController.createToken(params, 60 *60);
-      // 更新用户信息中token
-      let updateRes = await Service.update(
-        { token },
-        { where: { id: params.id } }
-      );
-      if (updateRes) {
-        ctx.body = BaseController.renderJsonWarn(200, '登录成功！', {userInfo, token});
-      } else {
-        ctx.body = BaseController.renderJsonWarn(400, '登录失败！');
-      }
-    } else {
-      ctx.body = BaseController.renderJsonWarn(400, '登录失败！');
+      ctx.body = BaseController.renderJsonWarn(400, '组织已经存在！');
     }
   }
 
@@ -108,10 +62,10 @@ class Controller {
   }
 
   /**
-   * @description: 获取用户列表
+   * @description: 获取组织信息
    * @param {Context} ctx
    */
-  async getUserList (ctx) {
+  async getOrganizeInfo (ctx) {
     const query = ctx.request.query || {};
 
     let { params, page, pageSize, start} = initPagination(query);
@@ -125,10 +79,10 @@ class Controller {
     ctx.body = BaseController.renderJsonWarn(200, '获取成功！', { list: data, total, page, pageSize});
   }
   /**
-   * @description: 删除用户
+   * @description: 删除组织
    * @param {Context} ctx
    */
-  async deleteUser (ctx) {
+  async deleteOrganize (ctx) {
     const { id } = ctx.request.body;
 
     if (!id) {
@@ -151,10 +105,10 @@ class Controller {
   }
 
   /**
-   * @description: 更新用户信息
+   * @description: 组织信息更新
    * @param {Context} ctx
    */
-  async updateUser (ctx) {
+  async updateOrganizeInfo (ctx) {
     const params = ctx.request.body;
     const id = params.id;
     const selector = {
@@ -178,27 +132,6 @@ class Controller {
       ctx.body = BaseController.renderJsonWarn(200, '更新成功！');
     } else {
       ctx.body = BaseController.renderJsonWarn(400, '更新失败！');
-    }
-  }
-
-  /**
-   * @description: 退出
-   * @param {Context} ctx
-   */
-  async logout (ctx) {
-    let { id, token} = ctx.payload;
-    let options = {}
-    if (id) options.id = id;
-    if (!id && token) options.token = token;
-    // 删除该用户token
-    let updateRes = await Service.update(
-      { token: '' },
-      { where: options }
-    );
-    if (updateRes) {
-      ctx.body = BaseController.renderJsonWarn(200, '退出成功！');
-    } else {
-      ctx.body = BaseController.renderJsonWarn(400, '退出失败！');
     }
   }
 
