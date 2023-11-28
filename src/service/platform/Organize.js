@@ -24,8 +24,8 @@ class PlatformService {
     // 查找项目
     async findAll(options={}) {
         let data = await Model.findAll(options);
-        // console.log('查找项目: length =', data.length)
-        return data;
+        console.log('查找项目: length =', data.length)
+        return [...data];
     }
     // 查找项目(分页)
     // TODO: 排序

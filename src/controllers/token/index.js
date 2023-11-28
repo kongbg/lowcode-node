@@ -6,7 +6,7 @@ class TokenController {
         const token = jwt.sign(
             data,
             secret,
-            { expiresIn: 10 } // 60 * 60 s
+            { expiresIn: 60 *60 } // 60 * 60 s
         );
         return `Bearer ${token}`;
     }

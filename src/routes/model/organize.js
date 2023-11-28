@@ -44,6 +44,24 @@ const router = new Router({ prefix: '/api' });
  router.post('/platform/organize/delete',Controller.deleteOrganize);
  
 /**
+ * @api {post} /api/platform/organize/tree 获取组织树形结构
+ * @apiDescription 获取组织树形结构
+ * @apiName getOrganizeTree
+ * @apiGroup platform
+ * @apiVersion 1.0.0
+ * @apiSuccessExample Success-Response:
+ *    HTTP/1.1 200 OK
+ *    {
+ *      "code": 200,
+ *      "message": 'ok',
+ *      "data": {
+ *          name: '234'
+ *      }
+ *    }
+ */
+router.get('/platform/organize/tree',Controller.getOrganizeTree);
+
+/**
  * @api {post} /api/platform/organize/info 获取组织信息
  * @apiDescription 获取组织信息
  * @apiName getOrganizeInfo

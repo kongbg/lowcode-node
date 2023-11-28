@@ -2,6 +2,7 @@ import { Op } from 'sequelize'
 import BaseController from '../BaseController.js';
 import Service from '../../service/platform/Organize.js'
 import { initPagination } from '../../utils/index.js'
+import { NeedModule } from  '../../utils/index.js'
 
 class Controller {
   /**
@@ -9,53 +10,51 @@ class Controller {
    * @param {Context} ctx
    */
   async add (ctx) {
-    let { userName, passWord } = ctx.request.body;
-    if (!userName || !passWord) {
-      ctx.body = BaseController.renderJsonWarn(400, '账号或密码错误！');
-      return;
-    }
+    let params = ctx.request.body;
 
-    let isExist = await Service.isExist({
-      where: {
-        username: userName
-      }
-    })
-    // 不存在，新增组织
-    if (!isExist) {
-      let data = await Service.addOne({
-        username: userName,
-        password: passWord
-      });
-      if (data) {
-        ctx.body = BaseController.renderJsonWarn(200, '新增成功！');
-      } else {
-        ctx.body = BaseController.renderJsonWarn(400, '新增失败！');
-      }
-    } else { // 已存在
-      ctx.body = BaseController.renderJsonWarn(400, '组织已经存在！');
+    let { id } = ctx.payload;
+    params.user_id = id;
+
+    let data = await Service.addOne({
+      ...params
+    });
+    if (data) {
+      ctx.body = BaseController.renderJsonWarn(200, '新增成功！');
+    } else {
+      ctx.body = BaseController.renderJsonWarn(400, '新增失败！');
     }
   }
 
   /**
-   * @description: 获取用户信息
+   * @description: 获取组织树形结构
    * @param {Context} ctx
    */
-  async getUserInfo (ctx) {
-    let { id } = ctx.request.query;
+  async getOrganizeTree (ctx) {
+    let { id } = ctx.payload;
     if (!id) {
-      ctx.body = BaseController.renderJsonWarn(400, '请传入用户id');
+      ctx.body = BaseController.renderJsonWarn(400, '请检查登录状态');
       return;
     }
 
     // 且条件查询
-    let data = await Service.findAll({
-      where: {
-        id
-      }
-    });
+    let params = {
+      [Op.and] : [
+        {user_id: id},
+        {pid: 0}
+      ]
+    }
+    let needModule = new NeedModule(Service, params)
+    
+    let data = await needModule.getNeedsTree()
+    // console.log('rrrr:', data)
+    // let data = await Service.findAll({
+    //   where: {
+    //     user_id: id
+    //   }
+    // });
 
-    if (data.length) {
-      ctx.body = BaseController.renderJsonWarn(200, '获取成功！', {data });
+    if (Array.isArray(data)) {
+      ctx.body = BaseController.renderJsonWarn(200, '获取成功！', {data});
     } else {
       ctx.body = BaseController.renderJsonWarn(400, '获取失败！');
     }

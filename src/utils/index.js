@@ -20,3 +20,44 @@ export const initPagination = (query, size=10) => {
         start: (page - 1) * pageSize
     }
 }
+
+
+// 获取树形结构数据
+class getNeedModule{
+    constructor(Needs, options){
+        this.options = options;
+        this.Needs = Needs;
+    }
+    async getNeedsTree(){
+        let rootNeeds = await this.Needs.findAll({
+            where: this.options
+        })
+        let _rootNeeds = rootNeeds.map(item => {
+            return  Object.assign(item.toJSON(), { children: [] })
+        });
+
+        await this.getChildNeeds(_rootNeeds);
+
+        return _rootNeeds;
+    }
+    async getChildNeeds(rootNeeds){
+        let expendPromise = [];
+        rootNeeds.forEach(item => {
+            expendPromise.push(this.Needs.findAll({
+                where : {
+                    pid : item.id
+                }
+            }))
+        })
+        let childs = await Promise.all(expendPromise);
+        for (let  [idx, item] of childs.entries()) {
+            if (rootNeeds[idx].children) {
+                rootNeeds[idx].children.push(item[0]);
+            } else {
+                rootNeeds[idx].children = [item[0]]
+            };
+        }
+        return rootNeeds;
+    }
+}
+export const NeedModule = getNeedModule;
