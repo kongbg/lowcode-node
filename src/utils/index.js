@@ -32,6 +32,7 @@ class getNeedModule{
         let rootNeeds = await this.Needs.findAll({
             where: this.options
         })
+        // 使 返回 的数据可修改
         let _rootNeeds = rootNeeds.map(item => {
             return  Object.assign(item.toJSON(), { children: [] })
         });
@@ -40,9 +41,9 @@ class getNeedModule{
 
         return _rootNeeds;
     }
-    async getChildNeeds(rootNeeds){
+    async getChildNeeds(node){
         let expendPromise = [];
-        rootNeeds.forEach(item => {
+        node.forEach(item => {
             expendPromise.push(this.Needs.findAll({
                 where : {
                     pid : item.id
@@ -50,14 +51,22 @@ class getNeedModule{
             }))
         })
         let childs = await Promise.all(expendPromise);
-        for (let  [idx, item] of childs.entries()) {
-            if (rootNeeds[idx].children) {
-                rootNeeds[idx].children.push(item[0]);
-            } else {
-                rootNeeds[idx].children = [item[0]]
-            };
+        for (let [idx, child] of childs.entries()) {
+
+            let _child = child.map(item => {
+                return  Object.assign(item.toJSON(), { children: [] })
+            });
+            if (_child.length) {
+                if (node[idx].children) {
+                    node[idx].children.push(..._child);
+                } else {
+                    node[idx].children = [..._child]
+                };
+            }
+
+            await this.getChildNeeds(_child);
         }
-        return rootNeeds;
+        return node;
     }
 }
 export const NeedModule = getNeedModule;
