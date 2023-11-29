@@ -1,46 +1,23 @@
 import { Op } from 'sequelize'
 import BaseController from '../BaseController.js';
-import Service from '../../service/platform/App.js'
-import TagService from '../../service/platform/AppTag.js'
+import Service from '../../service/platform/AppTag.js'
 import { initPagination } from '../../utils/index.js'
 
 class Controller {
   /**
-   * @description: 新增应用
+   * @description: 新增应用分类
    * @param {Context} ctx
    */
   async add (ctx) {
     let params = ctx.request.body;
 
-    let { id } = ctx.payload;
-    params.user_id = id;
-
-    console.log(params)
-
-    // 从参数中解析到tag信息
-    let type = params.type;
-    if (typeof type === 'string') {
-      let params2 = {
-        label: params.type,
-        organize_id: params.organize_id,
-        type: params.tag_type
-      }
-      let [flag, data] = await TagService.addOne(params2);
-      console.log(flag, data)
-      if (flag) {
-        params.type = data.id;
-      } else {
-        ctx.body = BaseController.renderJsonWarn(400, '新增失败！');
-        return;
-      }
-    }
-
-    delete params.tag_type;
-
-    let data2 = await Service.addOne({
+    let data = await Service.addOne({
       ...params
     });
-    if (data2) {
+
+    // 从参数中解析到tag信息
+
+    if (data) {
       ctx.body = BaseController.renderJsonWarn(200, '新增成功！');
     } else {
       ctx.body = BaseController.renderJsonWarn(400, '新增失败！');
@@ -48,10 +25,10 @@ class Controller {
   }
 
   /**
-   * @description: 获取应用信息
+   * @description: 获取应用分类信息
    * @param {Context} ctx
    */
-  async getAppInfo (ctx) {
+  async getAppTagInfo (ctx) {
     const query = ctx.request.query || {};
 
     let { params, page, pageSize, start} = initPagination(query);
@@ -66,25 +43,25 @@ class Controller {
   }
 
  /**
-   * @description: 获取所有应用
+   * @description: 获取所有应用分类
    * @param {Context} ctx
    */
- async getAppList (ctx) {
+ async getAppTagList (ctx) {
   const query = ctx.request.query || {};
 
   let data = await Service.findAll({
     where: {
-      ...query
+      type: query.type
     }
   });
 
   ctx.body = BaseController.renderJsonWarn(200, '获取成功！', { data });
 }
   /**
-   * @description: 删除应用
+   * @description: 删除应用分类
    * @param {Context} ctx
    */
-  async deleteApp (ctx) {
+  async deleteAppTag (ctx) {
     const { id } = ctx.request.body;
 
     if (!id) {
@@ -107,10 +84,10 @@ class Controller {
   }
 
   /**
-   * @description: 应用信息更新
+   * @description: 应用分类信息更新
    * @param {Context} ctx
    */
-  async updateAppInfo (ctx) {
+  async updateAppTagInfo (ctx) {
     const params = ctx.request.body;
     const id = params.id;
     const selector = {

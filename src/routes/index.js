@@ -6,6 +6,8 @@ import PlatformAccount from './model/PlatformAccount.js';
 import Organize from './model/Organize.js';
 // 平台应用相关
 import App from './model/App.js';
+// 平台应用分类相关
+import AppTag from './model/AppTag.js';
 
 // 导出初始化路由的方法
 export default {
@@ -15,5 +17,6 @@ export default {
         app.use(PlatformAccount.routes()).use(PlatformAccount.allowedMethods());
         app.use(Organize.routes()).use(Organize.allowedMethods());
         app.use(App.routes()).use(App.allowedMethods());
+        app.use(AppTag.routes()).use(AppTag.allowedMethods());
     }
 }
