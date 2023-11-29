@@ -35,7 +35,7 @@ export const verifToken = ({key='', secret='', whites=[]}=options) => {
                     }
                 }
             } else {
-                ctx.body = BaseController.renderJsonWarn(400, 'token格式错误');
+                ctx.body = BaseController.renderJsonWarn(400, '登录失效');
             }
         } else {
             await next();
