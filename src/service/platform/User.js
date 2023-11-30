@@ -17,8 +17,8 @@ class PlatformService {
     }
     // 查找一个项目
     async findOne(options={}) {
-        let data = await Model.findAll(options);
-        console.log('查找一个项目: length =', data.length)
+        let data = await Model.findOne(options);
+        // console.log('查找一个项目:', data)
         return data;
     }
     // 查找项目

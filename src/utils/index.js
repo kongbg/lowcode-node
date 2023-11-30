@@ -21,6 +21,20 @@ export const initPagination = (query, size=10) => {
     }
 }
 
+/**
+   * @description: 使sequelize返回的数据可修改
+   * @param {Object|Array} data  传入数据源
+   * @return {*} data 可编辑数据
+   */
+export const initEditMode = (data) => {
+    if (Array.isArray(data)) {
+        return data.map(item => {
+            return  Object.assign(item.toJSON())
+        });
+    } else {
+        return  Object.assign(data.toJSON())
+    }
+}
 
 // 获取树形结构数据
 class getNeedModule{

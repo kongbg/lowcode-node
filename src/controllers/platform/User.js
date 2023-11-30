@@ -1,7 +1,7 @@
 import { Op } from 'sequelize'
 import BaseController from '../BaseController.js';
 import Service from '../../service/platform/User.js'
-import { initPagination } from '../../utils/index.js'
+import { initPagination, initEditMode } from '../../utils/index.js'
 import TokenController from '../token/index.js'
 
 
@@ -59,8 +59,8 @@ class Controller {
       }
     });
 
-    if (data.length) {
-      let userInfo = data[0];
+    if (data) {
+      let userInfo = initEditMode(data);
       let params = {
         id: userInfo.id,
         userName: userInfo.username
@@ -73,6 +73,7 @@ class Controller {
         { where: { id: params.id } }
       );
       if (updateRes) {
+        delete userInfo.token;
         ctx.body = BaseController.renderJsonWarn(200, '登录成功！', {userInfo, token});
       } else {
         ctx.body = BaseController.renderJsonWarn(400, '登录失败！');
@@ -87,21 +88,21 @@ class Controller {
    * @param {Context} ctx
    */
   async getUserInfo (ctx) {
-    let { id } = ctx.request.query;
+    let id = ctx.request.query.id || ctx.payload.id;
     if (!id) {
       ctx.body = BaseController.renderJsonWarn(400, '请传入用户id');
       return;
     }
 
     // 且条件查询
-    let data = await Service.findAll({
+    let data = await Service.findOne({
       where: {
         id
       }
     });
 
-    if (data.length) {
-      ctx.body = BaseController.renderJsonWarn(200, '获取成功！', {data });
+    if (data) {
+      ctx.body = BaseController.renderJsonWarn(200, '获取成功！', { data });
     } else {
       ctx.body = BaseController.renderJsonWarn(400, '获取失败！');
     }
@@ -114,7 +115,7 @@ class Controller {
   async getUserList (ctx) {
     const query = ctx.request.query || {};
 
-    let { params, page, pageSize, start} = initPagination(query);
+    let { params, page, pageSize, start } = initPagination(query);
 
     let [data, total] = await Service.findAndCountAll({
       where: params,
@@ -122,7 +123,7 @@ class Controller {
       offset: start
     });
 
-    ctx.body = BaseController.renderJsonWarn(200, '获取成功！', { list: data, total, page, pageSize});
+    ctx.body = BaseController.renderJsonWarn(200, '获取成功！', { liat: data, total, page, pageSize });
   }
   /**
    * @description: 删除用户
@@ -167,6 +168,11 @@ class Controller {
     if (!id) {
       ctx.body = BaseController.renderJsonWarn(400, '请传入用户id');
       return;
+    }
+
+    // 公司id 等于 user id
+    if (!params.company_id) {
+      params.company_id = params.id;
     }
 
     let data = await Service.update(

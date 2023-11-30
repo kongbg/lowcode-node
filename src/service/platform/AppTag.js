@@ -11,7 +11,7 @@ class PlatformService {
     // 查找项目
     async findAll(options={}) {
         let data = await Model.findAll(options);
-        console.log('查找项目: length =', data.length)
+        // console.log('查找项目: length =', data.length)
         return [...data];
     }
     // 更新项目
@@ -29,7 +29,7 @@ class PlatformService {
     // 查找tag,没有就创建
     async tagfindOrCreate(options={}) {
         let res = await Model.findOrCreate(options);
-        console.log('resres:', res)
+        // console.log('resres:', res)
         // console.log('查找tag,没有就创建: length =', data.length)
         // return [json, created];
         return ['json', 'created'];

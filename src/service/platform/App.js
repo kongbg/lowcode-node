@@ -17,14 +17,14 @@ class PlatformService {
     }
     // 查找一个项目
     async findOne(options={}) {
-        let data = await Model.findAll(options);
+        let data = await Model.findOne(options);
         // console.log('查找一个项目: length =', data.length)
         return data;
     }
     // 查找项目
     async findAll(options={}) {
         let data = await Model.findAll(options);
-        console.log('查找项目: length =', data.length)
+        // console.log('查找项目: length =', data.length)
         return [...data];
     }
     // 查找项目(分页)

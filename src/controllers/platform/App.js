@@ -15,7 +15,7 @@ class Controller {
     let { id } = ctx.payload;
     params.user_id = id;
 
-    console.log(params)
+    // console.log(params)
 
     // 从参数中解析到tag信息
     let type = params.type;
@@ -26,7 +26,7 @@ class Controller {
         type: params.tag_type
       }
       let [flag, data] = await TagService.addOne(params2);
-      console.log(flag, data)
+      // console.log(flag, data)
       if (flag) {
         params.type = data.id;
       } else {
@@ -52,17 +52,15 @@ class Controller {
    * @param {Context} ctx
    */
   async getAppInfo (ctx) {
-    const query = ctx.request.query || {};
-
-    let { params, page, pageSize, start} = initPagination(query);
-
-    let [data, total] = await Service.findAndCountAll({
-      where: params,
-      limit: pageSize,
-      offset: start
+    const { id } = ctx.request.query || {};
+    let params = { 
+      id
+    }
+    let data = await Service.findOne({
+      where: params
     });
 
-    ctx.body = BaseController.renderJsonWarn(200, '获取成功！', { list: data, total, page, pageSize});
+    ctx.body = BaseController.renderJsonWarn(200, '获取成功！', { data });
   }
 
  /**
@@ -72,13 +70,15 @@ class Controller {
  async getAppList (ctx) {
   const query = ctx.request.query || {};
 
-  let data = await Service.findAll({
-    where: {
-      ...query
-    }
+  let { params, page, pageSize, start } = initPagination(query);
+  console.log(params, page, pageSize, start)
+  let [data, total] = await Service.findAndCountAll({
+    where: params,
+    limit: pageSize,
+    offset: start
   });
 
-  ctx.body = BaseController.renderJsonWarn(200, '获取成功！', { data });
+  ctx.body = BaseController.renderJsonWarn(200, '获取成功！', { list: data, total, page, pageSize });
 }
   /**
    * @description: 删除应用
