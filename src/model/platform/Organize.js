@@ -14,9 +14,14 @@ ItemModel.init({
 		allowNull: false,
         comment: '组织名称'
 	},
-    organize_id: {
+    user_id: {
 		type: DataTypes.INTEGER,
 		allowNull: false,
+        comment: '用户id'
+	},
+    organize_id: {
+		type: DataTypes.INTEGER,
+		allowNull: true,
         comment: '组织id'
 	},
     pid: {
